@@ -38,5 +38,5 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}, karl8080/pitest:latest
+          tags: ${{ steps.meta.outputs.tags }}, username/repository:latest
           labels: ${{ steps.meta.outputs.labels }}
