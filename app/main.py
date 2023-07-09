@@ -1,14 +1,22 @@
-from flask import Flask, request
+import multiprocessing
+from flask import Flask, request, jsonify
 import concurrent.futures
 import time
 from random import random
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET', 'POST'])
-def hello():
-    procs = int(request.args.get('procs', 4))
-    iters = int(request.args.get('iters', 1E+5))
+@app.route("/")
+def index():
+    return "App of computing Monte Carlo estimates of pi"
+
+@app.route('/api')
+@app.route('/api/')
+@app.route("/api/<int:num>")
+def pi(num=int(1E+5)):
+    max_procs = multiprocessing.cpu_count()
+    procs = min(int(request.args.get('procs', 4)), max_procs)
+    iters = num // procs
 
     start_time = time.time()
 
@@ -16,11 +24,18 @@ def hello():
     result = runtest.test_mc()
 
     elapsed_time = time.time() - start_time
-    strelapsed_time = f"{elapsed_time:.{2}f} seconds"
+    strelapsed_time = f"{elapsed_time * 1000:.{0}f} ms"
 
     piout, total_in, total = result
+    output = {
+        "pi": piout,
+        "total_in": total_in,
+        "total": total,
+        "time": strelapsed_time,
+        "threads": procs,
+    }
 
-    return f"Total: {total} In: {total_in}.<br>Pi: {piout}.<br>Elapsed time: {strelapsed_time}."
+    return jsonify(output)
 
 
 def calculate_pi(iters):
