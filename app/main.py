@@ -37,6 +37,7 @@ def pi(num=int(1E+5)):
 
     return jsonify(output)
 
+@app.route('/api/v0')
 @app.route('/api/v0/')
 @app.route("/api/v0/<int:num>")
 def pi(num=int(1E+5)):
