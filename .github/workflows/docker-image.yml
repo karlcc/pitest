@@ -2,11 +2,11 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "dev" ]
     tags:
       - 'v*'
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "dev" ]
     
   workflow_dispatch:
   
@@ -28,6 +28,8 @@ jobs:
           tags: |
             # set latest tag for master branch
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
+            type=ref,event=branch
+          flavor: latest=auto
       -
         name: Login to DockerHub
         if: github.event_name != 'pull_request'
@@ -43,5 +45,3 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          flavor: |
-            latest=auto
