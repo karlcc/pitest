@@ -1,5 +1,6 @@
 import multiprocessing
 from flask import Flask, request, jsonify
+import concurrent.futures
 import time
 from random import random
 
@@ -9,8 +10,8 @@ app = Flask(__name__)
 def index():
     return "App of computing Monte Carlo estimates of pi"
 
-@app.route('/api')
-@app.route('/api/')
+@app.route("/api")
+@app.route("/api/")
 @app.route("/api/<int:num>")
 def pi(num=int(1E+5)):
     max_procs = multiprocessing.cpu_count()
@@ -36,6 +37,32 @@ def pi(num=int(1E+5)):
 
     return jsonify(output)
 
+@app.route("/api/v0")
+@app.route("/api/v0/")
+@app.route("/api/v0/<int:num>")
+def piv0(num=int(1E+5)):
+    max_procs = multiprocessing.cpu_count()
+    procs = min(int(request.args.get('procs', 4)), max_procs)
+    iters = num // procs
+
+    start_time = time.time()
+
+    runtest = TestMCfutures(procs, iters)
+    result = runtest.test_mc()
+
+    elapsed_time = time.time() - start_time
+    strelapsed_time = f"{elapsed_time * 1000:.{0}f} ms"
+
+    piout, total_in, total = result
+    output = {
+        "pi": piout,
+        "total_in": total_in,
+        "total": total,
+        "time": strelapsed_time,
+        "threads": procs,
+    }
+
+    return jsonify(output)
 
 def calculate_pi(iters):
     """ Worker function """
@@ -50,7 +77,6 @@ def calculate_pi(iters):
 
     return points
 
-
 class TestMC:
     def __init__(self, procs, iters):
         self.procs = procs
@@ -61,6 +87,19 @@ class TestMC:
             results = pool.map(calculate_pi, [self.iters] * self.procs)
             total_in = sum(results)
             total = self.iters * self.procs
+            piout = 4.0 * total_in / total
+
+        return piout, total_in, total
+
+class TestMCfutures:
+    def __init__(self, procs, iters):
+        self.procs = procs
+        self.iters = iters
+
+    def test_mc(self):
+        with concurrent.futures.ProcessPoolExecutor(max_workers=self.procs) as executor:
+            total = self.iters * self.procs
+            total_in = sum(executor.map(calculate_pi, [self.iters] * self.procs))
             piout = 4.0 * total_in / total
 
         return piout, total_in, total
