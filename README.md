@@ -1,6 +1,7 @@
 ## Benchmark for python by computing Monte Carlo estimates of pi
 
 ### Python/Flask application
+![example branch parameter](https://github.com/karlcc/pitest/actions/workflows/docker-image.yml/badge.svg?branch=master)
 
 Project structure:
 ```
