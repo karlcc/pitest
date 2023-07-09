@@ -1,44 +1,47 @@
-from flask import Flask, request
-from random import random
+import multiprocessing
+from flask import Flask, request, jsonify
 import time
-from multiprocessing import Pool
+from random import random
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET', 'POST'])
-def hello():
-    getprocs = request.args.get('procs')
-    getiters = request.args.get('iters')
-    if getprocs:
-        procs = int(getprocs)
-    else:
-        procs = 4
-    if getiters:
-        iters = int(getiters)
-    else:
-        iters = int(1E+5)  # 1E+8 is cool
+@app.route("/")
+def index():
+    return "App of computing Monte Carlo estimates of pi"
+
+@app.route('/api')
+@app.route('/api/')
+@app.route("/api/<int:num>")
+def pi(num=int(1E+5)):
+    max_procs = multiprocessing.cpu_count()
+    procs = min(int(request.args.get('procs', 4)), max_procs)
+    iters = num // procs
 
     start_time = time.time()
 
-    runtest = TestMC(procs,iters)
+    runtest = TestMC(procs, iters)
     result = runtest.test_mc()
 
     elapsed_time = time.time() - start_time
-    strelapsed_time = f"{elapsed_time:.{2}f} second"
-    
-    piout = str(result[0])
-    total_in = str(result[1])
-    total = str(result[2])
+    strelapsed_time = f"{elapsed_time * 1000:.{0}f} ms"
 
-    return f"Total: {total} In: {total_in}.<br>Pi: {piout}.<br>Elapsed time: {strelapsed_time}."
+    piout, total_in, total = result
+    output = {
+        "pi": piout,
+        "total_in": total_in,
+        "total": total,
+        "time": strelapsed_time,
+        "threads": procs,
+    }
+
+    return jsonify(output)
 
 
 def calculate_pi(iters):
     """ Worker function """
-
     points = 0  # points inside circle
 
-    for i in range(iters):
+    for _ in range(iters):
         x = random()
         y = random()
 
@@ -46,25 +49,22 @@ def calculate_pi(iters):
             points += 1
 
     return points
+
+
 class TestMC:
     def __init__(self, procs, iters):
-        self.procs = procs   
-        self.iters = iters  
-    
+        self.procs = procs
+        self.iters = iters
+
     def test_mc(self):
-        p = Pool(processes=self.procs)
+        with multiprocessing.Pool(processes=self.procs) as pool:
+            results = pool.map(calculate_pi, [self.iters] * self.procs)
+            total_in = sum(results)
+            total = self.iters * self.procs
+            piout = 4.0 * total_in / total
 
-        total = self.iters * self.procs
-        total_in = 0
-
-        for points in p.map(calculate_pi, [self.iters] * self.procs):
-            total_in += points
-
-        #print ("Total: ", total, "In: ", total_in)
-        #print ("Pi: ", piout)
-        piout = 4.0 * total_in / total
-           
         return piout, total_in, total
 
+
 if __name__ == '__main__':
-    app.run()
+    app.run(threaded=True)
