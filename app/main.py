@@ -1,6 +1,5 @@
 import multiprocessing
 from flask import Flask, request, jsonify
-import concurrent.futures
 import time
 from random import random
 
@@ -58,9 +57,10 @@ class TestMC:
         self.iters = iters
 
     def test_mc(self):
-        with concurrent.futures.ProcessPoolExecutor(max_workers=self.procs) as executor:
+        with multiprocessing.Pool(processes=self.procs) as pool:
+            results = pool.map(calculate_pi, [self.iters] * self.procs)
+            total_in = sum(results)
             total = self.iters * self.procs
-            total_in = sum(executor.map(calculate_pi, [self.iters] * self.procs))
             piout = 4.0 * total_in / total
 
         return piout, total_in, total
