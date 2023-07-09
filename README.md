@@ -2,6 +2,7 @@
 
 ### Python/Flask application
 ![example branch parameter](https://github.com/karlcc/pitest/actions/workflows/docker-image.yml/badge.svg?branch=master)
+
 Project structure:
 ```
 .
