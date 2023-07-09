@@ -24,7 +24,7 @@ def hello():
     result = runtest.test_mc()
 
     elapsed_time = time.time() - start_time
-    strelapsed_time = f"{elapsed_time:.{2}f} seconds"
+    strelapsed_time = f"{elapsed_time:.{2}f} second"
     
     piout = str(result[0])
     total_in = str(result[1])
