@@ -33,7 +33,7 @@ $ curl localhost:8000/api/
 {"pi":3.12708,"threads":4,"time":"80 ms","total":100000,"total_in":78177}
 ```
 
-Change parallel computing and number of sample for each thread, default setting is 4 threads, 100000 samples. Change web address to `http://localhost:8000/api/100000?procs=2`. Now it runs in 2 threads and each thread with 100000 samples.
+Change parallel computing and number of sample for each thread, default setting is 4 threads, 100000 samples. Change web address to `http://localhost:8000/api/100000?procs=2`. Now it runs in 2 threads with 100000 samples.
 ```
 {"pi":3.14248,"threads":2,"time":"86 ms","total":100000,"total_in":78562}
 ```
