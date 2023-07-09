@@ -27,17 +27,13 @@ CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS        
 78e6c069e2f3   pitest    "flask --app app.mai…"   7 seconds ago   Up 4 seconds   0.0.0.0:8000->8000/tcp   optimistic_meninsky
 ```
 
-After the application starts, navigate to `http://localhost:8000` in your web browser or run:
+After the application starts, navigate to `http://localhost:8000/api/` in your web browser or run:
 ```
-$ curl localhost:8000
-Total: 400000 In: 314335.
-Pi: 3.14335.
-Elapsed time: 0.08 seconds.
+$ curl localhost:8000/api/
+{"pi":3.12708,"threads":4,"time":"80 ms","total":100000,"total_in":78177}
 ```
 
-Change parallel computing and number of sample for each thread, default setting is 4 threads, 100000 samples. Change web address to `http://localhost:8000/?procs=2&iters=200000`. Now it runs in 2 threads and each thread with 200000 samples.
+Change parallel computing and number of sample for each thread, default setting is 4 threads, 100000 samples. Change web address to `http://localhost:8000/api/100000?procs=2`. Now it runs in 2 threads and each thread with 100000 samples.
 ```
-Total: 400000 In: 314015.
-Pi: 3.14015.
-Elapsed time: 0.13 seconds.
+{"pi":3.14248,"threads":2,"time":"86 ms","total":100000,"total_in":78562}
 ```
