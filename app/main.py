@@ -10,8 +10,8 @@ app = Flask(__name__)
 def index():
     return "App of computing Monte Carlo estimates of pi"
 
-@app.route('/api')
-@app.route('/api/')
+@app.route("/api")
+@app.route("/api/")
 @app.route("/api/<int:num>")
 def pi(num=int(1E+5)):
     max_procs = multiprocessing.cpu_count()
@@ -37,10 +37,10 @@ def pi(num=int(1E+5)):
 
     return jsonify(output)
 
-@app.route('/api/v0')
-@app.route('/api/v0/')
+@app.route("/api/v0")
+@app.route("/api/v0/")
 @app.route("/api/v0/<int:num>")
-def pi(num=int(1E+5)):
+def piv0(num=int(1E+5)):
     max_procs = multiprocessing.cpu_count()
     procs = min(int(request.args.get('procs', 4)), max_procs)
     iters = num // procs
