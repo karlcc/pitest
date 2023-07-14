@@ -1,7 +1,7 @@
 ## Benchmark for python by computing Monte Carlo estimates of pi
+[![Build Status](https://github.com/karlcc/pitest/actions/workflows/docker-image.yml/badge.svg?branch=master)](https://github.com/karlcc/pitest/actions)
 
 ### Python/Flask application
-![example branch parameter](https://github.com/karlcc/pitest/actions/workflows/docker-image.yml/badge.svg?branch=master)
 
 Project structure:
 ```
